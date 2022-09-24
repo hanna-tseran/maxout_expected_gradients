@@ -1,0 +1,117 @@
+network_type: fc
+dataset_name: mnist
+maxout_rank: 5
+epochs_num: 3
+run time: 0h 3min 51s
+
+++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Training loss list:
+[1.944346308708191, 1.3656717538833618, 0.9051759243011475]
+Training accuracy list:
+[0.2282000035047531, 0.44172000885009766, 0.6938199996948242]
+Validation accuracy list:
+[0.30079999566078186, 0.5450999736785889, 0.8079000115394592]
+Test accuracy list:
+[0.2884, 0.5507, 0.8097]
+
+++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Model summary:
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ rescaling (Rescaling)       (None, 28, 28, 1)         0         
+                                                                 
+ flatten (Flatten)           (None, 784)               0         
+                                                                 
+ dense (Dense)               (None, 320)               251200    
+                                                                 
+ maxout (Maxout)             (None, 64)                0         
+                                                                 
+ dense_1 (Dense)             (None, 320)               20800     
+                                                                 
+ maxout_1 (Maxout)           (None, 64)                0         
+                                                                 
+ dense_2 (Dense)             (None, 320)               20800     
+                                                                 
+ maxout_2 (Maxout)           (None, 64)                0         
+                                                                 
+ dense_3 (Dense)             (None, 320)               20800     
+                                                                 
+ maxout_3 (Maxout)           (None, 64)                0         
+                                                                 
+ dense_4 (Dense)             (None, 320)               20800     
+                                                                 
+ maxout_4 (Maxout)           (None, 64)                0         
+                                                                 
+ dense_5 (Dense)             (None, 160)               10400     
+                                                                 
+ maxout_5 (Maxout)           (None, 32)                0         
+                                                                 
+ dense_6 (Dense)             (None, 160)               5280      
+                                                                 
+ maxout_6 (Maxout)           (None, 32)                0         
+                                                                 
+ dense_7 (Dense)             (None, 160)               5280      
+                                                                 
+ maxout_7 (Maxout)           (None, 32)                0         
+                                                                 
+ dense_8 (Dense)             (None, 160)               5280      
+                                                                 
+ maxout_8 (Maxout)           (None, 32)                0         
+                                                                 
+ dense_9 (Dense)             (None, 160)               5280      
+                                                                 
+ maxout_9 (Maxout)           (None, 32)                0         
+                                                                 
+ dense_10 (Dense)            (None, 80)                2640      
+                                                                 
+ maxout_10 (Maxout)          (None, 16)                0         
+                                                                 
+ dense_11 (Dense)            (None, 80)                1360      
+                                                                 
+ maxout_11 (Maxout)          (None, 16)                0         
+                                                                 
+ dense_12 (Dense)            (None, 80)                1360      
+                                                                 
+ maxout_12 (Maxout)          (None, 16)                0         
+                                                                 
+ dense_13 (Dense)            (None, 80)                1360      
+                                                                 
+ maxout_13 (Maxout)          (None, 16)                0         
+                                                                 
+ dense_14 (Dense)            (None, 80)                1360      
+                                                                 
+ maxout_14 (Maxout)          (None, 16)                0         
+                                                                 
+ dense_15 (Dense)            (None, 40)                680       
+                                                                 
+ maxout_15 (Maxout)          (None, 8)                 0         
+                                                                 
+ dense_16 (Dense)            (None, 40)                360       
+                                                                 
+ maxout_16 (Maxout)          (None, 8)                 0         
+                                                                 
+ dense_17 (Dense)            (None, 40)                360       
+                                                                 
+ maxout_17 (Maxout)          (None, 8)                 0         
+                                                                 
+ dense_18 (Dense)            (None, 40)                360       
+                                                                 
+ maxout_18 (Maxout)          (None, 8)                 0         
+                                                                 
+ dense_19 (Dense)            (None, 40)                360       
+                                                                 
+ maxout_19 (Maxout)          (None, 8)                 0         
+                                                                 
+ dense_20 (Dense)            (None, 10)                90        
+                                                                 
+=================================================================
+Total params: 376,210
+Trainable params: 376,210
+Non-trainable params: 0
+_________________________________________________________________
