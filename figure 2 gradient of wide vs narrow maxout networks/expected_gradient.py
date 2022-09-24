@@ -17,9 +17,9 @@ COLOR_LIST = ['xkcd:light purple', 'xkcd:pale brown', 'xkcd:orange', 'xkcd:blue'
 
 comm = MPI.COMM_WORLD
 
-WIDTH = 2#4#50
-NUMBER_OF_RUNS = 2#100
-NUMBER_OF_X_RUNS = 2#3
+WIDTH = 2
+NUMBER_OF_RUNS = 7
+NUMBER_OF_X_RUNS = 2
 K = 5
 NETWORK_TYPE = 'fc' #'fc' for a fully-connected network or 'cnn' for a convolutional neural network
 
@@ -206,15 +206,11 @@ def run():
                                 quartiles[xi2][ci][di][qi2] = np.nan
 
     # Plotting the results
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    plot_quartiles(x=depth_array, quartiles=quartiles, c_array=c_array, timestamp=timestamp,
-        name=f'gradient_mean2_quartiles_{NETWORK_TYPE}_r{NUMBER_OF_RUNS}_xr{NUMBER_OF_X_RUNS}',
+    plot_quartiles(x=depth_array, quartiles=quartiles, c_array=c_array,
         ylabel='$n_0 (\partial \mathcal{N} / \partial W_{i,k\',j})^2$')
 
-def plot_quartiles(x, quartiles, c_array, timestamp, name, ylabel):
-    fig = plt.figure(figsize=(24, 9), dpi=100)
-    # fig = plt.figure(figsize=(20, 9), dpi=100)
-    # fig = plt.figure(figsize=(14, 9), dpi=100)
+def plot_quartiles(x, quartiles, c_array, ylabel):
+    fig = plt.figure(figsize=(16, 9), dpi=100)
     ax = fig.add_subplot(111)
     ax.tick_params(axis='both', which='major', labelsize=44)
     ax.tick_params(axis='both', which='minor', labelsize=44)
@@ -239,13 +235,8 @@ def plot_quartiles(x, quartiles, c_array, timestamp, name, ylabel):
     ax.set_xticks(xticks)
     plt.xlim(xmin=depth_array[0], xmax=depth_array[-1])
 
-    yticks = [1.e-40, 1.e-20, 1., 1.e+20, 1.e+40]
-    ax.set_yticks(yticks)
-    plt.ylim(ymin=1.e-50, ymax=1.e+50)
-
-    plt.legend(loc='center right', title='Value of $c$', fontsize=46, title_fontsize=54, bbox_to_anchor=(1.6, 0.5))
-    plt.tight_layout()
-    plt.savefig(f'{timestamp}_{name}_K{K}_quartiles_width{WIDTH}.png')
+    plt.legend(loc='center right', title='Value of $c$', fontsize=40, title_fontsize=50, bbox_to_anchor=(1.4, 0.5))
+    plt.savefig(f'quartiles.png', bbox_inches='tight')
 
 def main(args):
     run()
