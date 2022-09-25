@@ -1,6 +1,6 @@
 The following command can be used to execute the script:
 
-python training.py fc mnist 5 3
+python training.py fc mnist 5 10
 
 The arguments are:
 1. network type: fc for fully-connected or cnn.
