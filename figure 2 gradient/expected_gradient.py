@@ -1,6 +1,5 @@
 from datetime import datetime
 import matplotlib.pyplot as plt
-from mpi4py import MPI
 import numpy as np
 import os
 import random
