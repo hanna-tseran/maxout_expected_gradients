@@ -14,8 +14,6 @@ COLOR_LIST = ['xkcd:light purple', 'xkcd:pale brown', 'xkcd:orange', 'xkcd:blue'
     'xkcd:yellow orange', 'xkcd:purple', 'xkcd:sky blue', 'xkcd:red brown', 'xkcd:magenta',
     'xkcd:green/yellow', 'xkcd:pink', 'xkcd:toxic green', 'xkcd:marine']
 
-comm = MPI.COMM_WORLD
-
 WIDTH = 2
 NUMBER_OF_RUNS = 7
 NUMBER_OF_X_RUNS = 2
@@ -123,8 +121,9 @@ def replace_zero_w_nan(arr):
 ########################################################################################
 
 def run():
-    # total_quartiles = [[] for _ in range(NUMBER_OF_X_RUNS)]
     total_quartiles = [[[[] for _ in range(len(depth_array))] for _ in range(len(c_array))]
+        for _ in range(NUMBER_OF_X_RUNS)]
+    total_norm_means = [[[[] for _ in range(len(depth_array))] for _ in range(len(c_array))]
         for _ in range(NUMBER_OF_X_RUNS)]
 
     # Generate all inputs and ensurre that they are not repeated
@@ -176,14 +175,17 @@ def run():
                 ########################################################################################
                 norm_list = remove_inf_nan(norm_list)
                 if len(norm_list) > 0:
-                    quartiles = replace_zero_w_nan(np.quantile(norm_list, [0.25, 0.5, 0.75]))
+                    quartiles = replace_zero_w_nan(np.quantile(norm_list, [0.25, 0.75]))
+                    norm_means = np.mean(norm_list)
                 # This case occurs if all results are zero or infinity
                 else:
                     quartiles = np.asarray([np.nan, np.nan, np.nan])
+                    norm_means = np.nan
                 ################################################################################################
                 ################################################################################################
 
                 total_quartiles[xi][ci][di] = quartiles
+                total_norm_means[xi][ci][di] = norm_means
 
     if NETWORK_TYPE == 'fc':
         coef = INPUT_SHAPE[-1]
@@ -192,23 +194,25 @@ def run():
     else:
         raise Exception('Wrong NETWORK_TYPE')
 
-    quartiles = coef * np.asarray(total_quartiles)
+    total_quartiles = replace_zero_w_nan(coef * total_quartiles)
+    total_norm_means = replace_zero_w_nan(coef * total_norm_means)
     # Remove values where not all quartiles are available
     for xi in range(NUMBER_OF_X_RUNS):
         for ci in range(len(c_array)):
             for di in range(len(depth_array)):
-                for qi in range(3):
+                for qi in range(2):
                     # Check for nan
-                    if np.isnan(quartiles[xi][ci][di][qi]):
+                    if np.isnan(total_quartiles[xi][ci][di][qi]):
                         for xi2 in range(NUMBER_OF_X_RUNS):
-                            for qi2 in range(3):
-                                quartiles[xi2][ci][di][qi2] = np.nan
+                            for qi2 in range(2):
+                                total_quartiles[xi2][ci][di][qi2] = np.nan
+                            total_norm_means[xi2][ci][di] = np.nan
 
     # Plotting the results
-    plot_quartiles(x=depth_array, quartiles=quartiles, c_array=c_array,
+    plot_means_quartiles(x=depth_array, means=total_norm_means, quartiles=total_quartiles, c_array=c_array,
         ylabel='$n_0 (\partial \mathcal{N} / \partial W_{i,k\',j})^2$')
 
-def plot_quartiles(x, quartiles, c_array, ylabel):
+def plot_means_quartiles(x, means, quartiles, c_array, ylabel):
     fig = plt.figure(figsize=(16, 9), dpi=100)
     ax = fig.add_subplot(111)
     ax.tick_params(axis='both', which='major', labelsize=44)
@@ -217,15 +221,14 @@ def plot_quartiles(x, quartiles, c_array, ylabel):
     ax.set_yscale('log')
     plt.plot(x, [1 for _ in range(len(x))], linewidth=2, color='black')
 
-    for i, (yi) in enumerate(quartiles):
+    for i, (mi, yi) in enumerate(zip(means, quartiles)):
         for ci, c in enumerate(c_array):
             q1 = np.asarray([yc[0] for yc in yi[ci]])
-            q2 = np.asarray([yc[1] for yc in yi[ci]])
-            q3 = np.asarray([yc[2] for yc in yi[ci]])
+            q3 = np.asarray([yc[1] for yc in yi[ci]])
             if i == 0:
-                plt.plot(x, q2, linewidth=3, color=c_to_color[c], label=c)
+                plt.plot(x, mi[ci], linewidth=3, color=c_to_color[c], label=c)
             else:
-                plt.plot(x, q2, linewidth=3, color=c_to_color[c])
+                plt.plot(x, mi[ci], linewidth=3, color=c_to_color[c])
             plt.fill_between(x, q1, q3, facecolor=c_to_color[c], alpha=0.075)
 
     plt.ylabel(ylabel, size=50)
@@ -235,7 +238,7 @@ def plot_quartiles(x, quartiles, c_array, ylabel):
     plt.xlim(xmin=depth_array[0], xmax=depth_array[-1])
 
     plt.legend(loc='center right', title='Value of $c$', fontsize=40, title_fontsize=50, bbox_to_anchor=(1.4, 0.5))
-    plt.savefig(f'quartiles.png', bbox_inches='tight')
+    plt.savefig(f'mean_and_interquartile_range.png', bbox_inches='tight')
 
 def main(args):
     run()

@@ -19,6 +19,11 @@ S_DICT = {2: 0.61102, 3: 0.47559, 4: 0.40482, 5: 0.36052}
 L_DICT = {2: 2.7519, 3: 5.18678, 4: 8.28487, 5: 12.03698}
 M_DICT = {2: 1., 3: 0.78391, 4:0.64461, 5: 0.55555}
 
+MAXOUT_RANK = 5
+
+# To test max-pooling initialization set c = 33333
+C = M_DICT[MAXOUT_RANK] if MAXOUT_RANK > 0 else None # None corresponds to ReLU
+
 BATCH_SIZE = 32
 AUGMENT_DATA = False # Has effect only on CNNs
 FLIP = False # Randomly flip the image during preprocessing
@@ -37,11 +42,11 @@ cnn_weights_initializer = lambda c, k, fan_in: tf.keras.initializers.RandomNorma
     mean=0., stddev=np.sqrt(c / ((k**2) * fan_in)))
 
 class TrainingExperiment:
-    def __init__(self, network_type, dataset_name, maxout_rank, epochs_num):
+    def __init__(self, network_type, dataset_name, epochs_num):
         self.network_type = network_type
         self.dataset_name = dataset_name
-        self.maxout_rank = maxout_rank
-        self.c = M_DICT[self.maxout_rank] if self.maxout_rank > 0 else None # None corresponds to ReLU
+        self.maxout_rank = MAXOUT_RANK
+        self.c = C
         self.epochs_num = epochs_num
 
     def get_maxout_fc_network(self, input_shape, output_shape, hidden_layer_widths, c):
@@ -137,6 +142,7 @@ class TrainingExperiment:
         # This sets up only the conv layers
         for channels, block_size, kernel_size in zip(channel_numbers, block_sizes[:-2], kernel_sizes):
             for bi in range(block_size):
+                # max-pooling initialization
                 if c == 33333:
                     if bi < block_size - 1:
                         local_c = 0.55555
@@ -186,6 +192,7 @@ class TrainingExperiment:
         layers.append(tf.keras.layers.Flatten())
         for fc_size, block_size in zip(fc_sizes, block_sizes[-2:]):
             for _ in range(block_size):
+                # max-pooling initialization
                 if c == 33333:
                     local_c = 0.55555
                     layers.extend([
@@ -452,6 +459,7 @@ class TrainingExperiment:
                 f'network_type: {self.network_type}\n'
                 + f'dataset_name: {self.dataset_name}\n'
                 + f'maxout_rank: {self.maxout_rank}\n'
+                + f'c: {self.c}\n'
                 + f'epochs_num: {self.epochs_num}\n'
                 + f'run time: {hours}h {minutes}min {int(seconds)}s\n'
                 +'\n++++++++++++++++++++++++++++++++++++++++++++++++++\n'
@@ -670,18 +678,15 @@ def main(args):
     # Read command line arguments and setup the experiment
     network_type = str(args[0])
     dataset_name = str(args[1])
-    maxout_rank = int(args[2]) # set to 0 to use a ReLU network
-    epochs_num = int(args[3])
+    epochs_num = int(args[2])
 
     print(f'network_type: {network_type}')
     print(f'dataset_name: {dataset_name}')
-    print(f'maxout_rank: {maxout_rank}')
     print(f'epochs_num: {epochs_num}')
 
     experiment = TrainingExperiment(
         network_type=network_type,
         dataset_name=dataset_name,
-        maxout_rank=maxout_rank,
         epochs_num=epochs_num
         )
     experiment.run()
