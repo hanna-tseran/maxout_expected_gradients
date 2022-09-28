@@ -15,9 +15,9 @@ np.set_printoptions(threshold=sys.maxsize)
 
 C_DICT = {'linear': 1, 'relu': 2}
 
-S_DICT = {2: 0.61102, 3: 0.47559, 4: 0.40482, 5: 0.36052}
-L_DICT = {2: 2.7519, 3: 5.18678, 4: 8.28487, 5: 12.03698}
-M_DICT = {2: 1., 3: 0.78391, 4:0.64461, 5: 0.55555}
+S_DICT = {2: 2.7519, 3: 5.18678, 4: 8.28487, 5: 12.03698} # Reciprocal of the lower bound
+L_DICT = {2: 0.61102, 3: 0.47559, 4: 0.40482, 5: 0.36052} # Reciprocal of the upper bound
+M_DICT = {2: 1., 3: 0.78391, 4:0.64461, 5: 0.55555} # Initialization suggested in the paper
 
 MAXOUT_RANK = 5
 
